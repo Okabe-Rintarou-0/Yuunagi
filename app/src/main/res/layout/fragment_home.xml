@@ -16,7 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_launcher"
         tools:layout_editor_absoluteY="89dp"
-        tools:srcCompat="@drawable/ic_launcher" />
+        tools:srcCompat="@drawable/ic_launcher"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/coverSearchButton"
@@ -24,7 +25,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="16dp"
-        android:text="SEARCH"
+        android:text="@string/search"
         app:layout_constraintStart_toEndOf="@+id/coverSearchBar"
         app:layout_constraintTop_toBottomOf="@+id/videoCover" />
 
@@ -43,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="156dp"
-        android:text="NEXT"
+        android:text="@string/next"
         app:layout_constraintStart_toEndOf="@+id/getPrevCoverButton"
         app:layout_constraintTop_toBottomOf="@+id/coverSearchBar" />
 
@@ -53,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="156dp"
-        android:text="PREV"
+        android:text="@string/prev"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coverSearchBar" />
 

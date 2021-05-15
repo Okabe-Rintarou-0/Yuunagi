@@ -30,6 +30,7 @@ import com.example.yuunagi.utils.ImageManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -38,11 +39,19 @@ public class HomeFragment extends Fragment {
     private TextView title;
     private TextView bvId;
     private List<String> BvIdList;
+    private List<Map<String, String>> videoInfoList;
     private BilibiliCrawler bilibiliCrawler;
     private Integer thisPageIndex = 1;
     private Integer thisBvIdIndex = -1;
+    private Integer thisVideoInfoIndex = -1;
     private String thisKeyword = "斋藤飞鸟";
     private String userInput = "";
+
+    private void getNewVideoInfoList() throws InterruptedException {
+        videoInfoList = null;
+        bilibiliCrawler.crawCoverUrl(thisKeyword, thisPageIndex);
+        videoInfoList = bilibiliCrawler.getVideoInfoList();
+    }
 
     public void getNewBvIdList() {
         try {
@@ -62,7 +71,6 @@ public class HomeFragment extends Fragment {
             getNewBvIdList();
             if (BvIdList.isEmpty()) return;
         }
-        Log.d("index", thisBvIdIndex.toString());
         String thisBvId = BvIdList.get(thisBvIdIndex);
         bilibiliCrawler.crawlVideoInfoBvId(thisBvId);
         Glide.with(getContext()).load(bilibiliCrawler.getVideoInfo().get("cover")).into(cover);
@@ -156,7 +164,7 @@ public class HomeFragment extends Fragment {
                 if (!thisKeyword.isEmpty()) {
                     try {
                         presentKeyword.setText(getString(R.string.present_keyword) + ":" + thisKeyword);
-                        getNewBvIdList();
+                        getNewVideoInfoList();
                         getNextCover();
                     } catch (IOException e) {
                         e.printStackTrace();

@@ -1,11 +1,15 @@
 package com.example.yuunagi.crawlers;
 
+import android.annotation.SuppressLint;
+import android.icu.util.LocaleData;
 import android.util.Log;
 
 import com.example.yuunagi.R;
+import com.example.yuunagi.entity.Rank;
 import com.example.yuunagi.utils.BVAVDecipher;
 
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.jsoup.Connection;
@@ -24,15 +28,17 @@ import java.util.regex.Pattern;
 public class BilibiliCrawler {
     private final String fansUrl = "https://space.bilibili.com/%S/fans/fans";
 
-    private final String rankUrl = "https://www.bilibili.com/v/popular/rank/all/";
+    private final String rankUrl = "https://www.bilibili.com/v/popular/rank/all";
 
     private final String searchUserUrl = "https://search.bilibili.com/upuser?keyword=%S&from_source=web_search";
 
     private final String searchVideoUrl = "https://search.bilibili.com/all?keyword=%S&page=%d";
 
+    private final String searchApiUrl = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=%S&page=%d";
+
     private static BilibiliCrawler bilibiliCrawler;
 
-    private List<Map<String, String>> rankList;
+    private List<Rank> rankList;
 
     private List<String> BvIdList;
 
@@ -45,6 +51,8 @@ public class BilibiliCrawler {
     private String username;
 
     private Map<String, String> videoInfo;
+
+    private List<Map<String, String>> videoInfoList;
 
     private BilibiliCrawler() {
     }
@@ -91,29 +99,6 @@ public class BilibiliCrawler {
                 }
             }
         }));
-//        threads.add(new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Connection connection = Jsoup.connect(rankUrl);
-//                connection.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/    20100101 Firefox/32.0");
-//                try {
-//                    Document document = connection.get();
-//                    List<Element> content = document.select("div[class=\"content\"] span");
-//                    for (int i = 0; i < 30; i += 3) {
-//                        Map<String, String> basicInfo = new HashMap<>();
-//                        basicInfo.put("play", content.get(i).text());
-//                        basicInfo.put("commenting", content.get(i + 1).text());
-//                        basicInfo.put("author", content.get(i + 2).text());
-//                        rankList.add(basicInfo);
-//                    }
-//                    content = document.select("div[class=\"content\"] a[class=\"title\"]");
-//                    for (int i = 0; i < 10; ++i)
-//                        rankList.get(i).put("title", content.get(i).text());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }));
         for (Thread thread : threads) {
             thread.start();
             thread.join();
@@ -136,6 +121,82 @@ public class BilibiliCrawler {
                     else uid = 1;
                 } catch (IOException e) {
                     uid = 1;
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        thread.join();
+    }
+
+    public void crawlRankInfo() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Connection connection = Jsoup.connect(rankUrl);
+                connection.header("User-Agent", "User-Agent:Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;");
+                try {
+                    Document document = connection.get();
+                    List<Element> content = document.select("div[class=\"content\"] span");
+                    Log.d("content", document.html());
+                    for (int i = 0; i < 30; i += 3) {
+//                        Rank basicInfo = new Rank();
+//                        basicInfo.put("play", content.get(i).text());
+//                        basicInfo.put("commenting", content.get(i + 1).text());
+//                        basicInfo.put("author", content.get(i + 2).text());
+//                        rankList.add(basicInfo);
+                    }
+                    content = document.select("div[class=\"content\"] a[class=\"title\"]");
+                    for (int i = 0; i < 10; ++i) ;
+//                        rankList.get(i).put("title", content.get(i).text());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        thread.join();
+    }
+
+    public void crawCoverUrl(final String keyword, final Integer pageIndex) throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                videoInfoList = null;
+                videoInfoList = new ArrayList<>();
+                @SuppressLint("DefaultLocale") Connection connection = Jsoup.connect(String.format(searchApiUrl, keyword, pageIndex));
+                connection
+                        .header("Accept", "*/*")
+                        .header("Accept-Encoding", "gzip, deflate")
+                        .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+                        .header("Content-Type", "application/json;charset=UTF-8")
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
+                        .timeout(10000).ignoreContentType(true);
+                try {
+                    connection.get();
+                    Connection.Response response = null;
+                    try {
+                        response = connection.execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String body = response.body();
+//                Log.d("bvid", BvId);
+                    JSONObject jsonObject = JSONObject.fromObject(body);
+                    JSONObject data = JSONObject.fromObject(jsonObject.get("data"));
+                    JSONObject result = JSONObject.fromObject(JSONArray.fromObject(data.get("result")).get(0));
+                    Log.d("title", result.getString("title"));
+                    String title = result.getString("title");
+                    String tag = String.format("<em class=\"keyword\">%S</em>", keyword);
+                    String realTitle = title.replaceAll(tag,keyword);
+                    Log.d("cover", result.getString("pic"));
+                    Log.d("bvId", result.getString("bvid"));
+                    videoInfo = new HashMap<>();
+                    videoInfo.put("cover", "http:" + result.getString("pic"));
+                    videoInfo.put("bvId", result.getString("bvid"));
+                    videoInfo.put("title", realTitle);
+                    videoInfoList.add(videoInfo);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -223,7 +284,7 @@ public class BilibiliCrawler {
         return fansNumber;
     }
 
-    public List<Map<String, String>> getRankList() {
+    public List<Rank> getRankList() {
         return rankList;
     }
 
@@ -241,5 +302,9 @@ public class BilibiliCrawler {
 
     public Map<String, String> getVideoInfo() {
         return videoInfo;
+    }
+
+    public List<Map<String, String>> getVideoInfoList() {
+        return videoInfoList;
     }
 }

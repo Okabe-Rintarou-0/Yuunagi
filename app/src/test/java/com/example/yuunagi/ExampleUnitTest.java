@@ -17,6 +17,6 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws InterruptedException {
         assertEquals(4, 2 + 2);
 //        System.out.println(BVAVDecipher.getInstance().dec(BVAVDecipher.getInstance().enc(12323L)));
-        BilibiliCrawler.getInstance().crawlVideoCoverUrl("斋藤飞鸟", 1);
+        BilibiliCrawler.getInstance().crawlVideoBVIdUrl("斋藤飞鸟", 1);
     }
 }

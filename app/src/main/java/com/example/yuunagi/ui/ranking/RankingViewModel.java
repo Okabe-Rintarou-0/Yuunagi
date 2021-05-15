@@ -1,14 +1,14 @@
-package com.example.yuunagi.ui.notifications;
+package com.example.yuunagi.ui.ranking;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class RankingViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public NotificationsViewModel() {
+    public RankingViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is notifications fragment");
     }
