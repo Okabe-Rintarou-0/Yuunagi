@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Yuunagi</string>
+    <string name="title_home">Video</string>
+    <string name="title_bilibili">Bilibili</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="bilibili_fans">Fans number</string>
+    <string name="present_keyword">Present keyword</string>
+    <string name="video_title">Video title</string>
+    <string name="video_bvId">BvId</string>
+    <string name="bilibili_uid">Uid</string>
+</resources>

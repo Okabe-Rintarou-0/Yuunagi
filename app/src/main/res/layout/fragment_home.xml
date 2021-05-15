@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.home.HomeFragment">
+
+    <ImageView
+        android:id="@+id/videoCover"
+        android:layout_width="285dp"
+        android:layout_height="158dp"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/ic_dashboard_black_24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="89dp" />
+
+    <Button
+        android:id="@+id/coverSearchButton"
+        android:layout_width="85dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="16dp"
+        android:text="SEARCH"
+        app:layout_constraintStart_toEndOf="@+id/coverSearchBar"
+        app:layout_constraintTop_toBottomOf="@+id/videoCover" />
+
+    <SearchView
+        android:id="@+id/coverSearchBar"
+        android:layout_width="233dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoCover" />
+
+    <Button
+        android:id="@+id/getNextCoverButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="156dp"
+        android:text="NEXT"
+        app:layout_constraintStart_toEndOf="@+id/getPrevCoverButton"
+        app:layout_constraintTop_toBottomOf="@+id/coverSearchBar" />
+
+    <Button
+        android:id="@+id/getPrevCoverButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="156dp"
+        android:text="PREV"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coverSearchBar" />
+
+    <TextView
+        android:id="@+id/keyword"
+        android:layout_width="329dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coverSearchBar" />
+
+    <TextView
+        android:id="@+id/videoTitle"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keyword" />
+
+    <TextView
+        android:id="@+id/BvId"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoTitle" />
+</androidx.constraintlayout.widget.ConstraintLayout>
