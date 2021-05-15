@@ -36,9 +36,9 @@ public class BilibiliCrawler {
 
     private List<String> BvIdList;
 
-    private Integer fansNumber = -1;
+    private String fansNumber = "0";
 
-    private String iconUrl;
+    private String iconUrl = "";
 
     private Integer uid;
 
@@ -71,15 +71,21 @@ public class BilibiliCrawler {
                     iconUrl = _iconUrl;
                     String[] personalInfo = document.select("meta[name=\"description\"]").attr("content").split("；");
                     Pattern pattern = Pattern.compile("[0-9]+");
-                    Log.d("personal", personalInfo[0]);
+//                    Log.d("personal", document.select("meta[name=\"description\"]").attr("content"));
                     username = personalInfo[0].endsWith("，") ?
                             personalInfo[0].substring(4, personalInfo[0].length() - 1) : personalInfo[0].substring(4);
-
+                    int fansIndex;
+                    for (fansIndex = 1; fansIndex < personalInfo.length; ++fansIndex) {
+                        if (!personalInfo[fansIndex].contains("粉丝数：")) {
+                            continue;
+                        }
+                        break;
+                    }
 //                    Log.d("username", username);
-                    Matcher matcher = pattern.matcher(personalInfo[2]);
+                    Matcher matcher = pattern.matcher(personalInfo[fansIndex]);
                     if (matcher.find()) {
-                        fansNumber = Integer.parseInt(matcher.group(0));
-                    } else fansNumber = -1;
+                        fansNumber = matcher.group(0);
+                    } else fansNumber = "0";
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -124,9 +130,12 @@ public class BilibiliCrawler {
                 try {
                     Document document = connection.get();
                     String personalZoneUrl = document.select("div.headline a").attr("href");
-                    uid = Integer.parseInt(Pattern.compile("[^0-9]").matcher(personalZoneUrl).replaceAll(""));
+                    String uidStr = Pattern.compile("[^0-9]").matcher(personalZoneUrl).replaceAll("");
+                    if (!uidStr.isEmpty())
+                        uid = Integer.parseInt(uidStr);
+                    else uid = 1;
                 } catch (IOException e) {
-                    uid = -1;
+                    uid = 1;
                     e.printStackTrace();
                 }
             }
@@ -210,7 +219,7 @@ public class BilibiliCrawler {
         return iconUrl;
     }
 
-    public Integer getFansNumber() {
+    public String getFansNumber() {
         return fansNumber;
     }
 

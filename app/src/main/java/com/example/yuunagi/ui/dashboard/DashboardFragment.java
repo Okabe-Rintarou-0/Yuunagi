@@ -206,10 +206,10 @@ public class DashboardFragment extends Fragment {
             }
         });
         username = root.findViewById(R.id.Username);
-        dashboardViewModel.getFansNumber().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+        dashboardViewModel.getFansNumber().observe(getViewLifecycleOwner(), new Observer<String>() {
             @SuppressLint("SetTextI18n")
             @Override
-            public void onChanged(@Nullable Integer fansNumber) {
+            public void onChanged(@Nullable String fansNumber) {
                 fansNumberText.setText(getString(R.string.bilibili_fans) + ":" + bilibiliCrawler.getFansNumber());
                 uid.setText(getString(R.string.bilibili_uid) + ":" + thisUid.toString());
                 username.setText(bilibiliCrawler.getUsername());

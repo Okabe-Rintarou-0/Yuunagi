@@ -60,8 +60,9 @@ public class HomeFragment extends Fragment {
             ++thisPageIndex;
             thisBvIdIndex = 0;
             getNewBvIdList();
+            if (BvIdList.isEmpty()) return;
         }
-//        Log.d("index", thisBvIdIndex.toString());
+        Log.d("index", thisBvIdIndex.toString());
         String thisBvId = BvIdList.get(thisBvIdIndex);
         bilibiliCrawler.crawlVideoInfoBvId(thisBvId);
         Glide.with(getContext()).load(bilibiliCrawler.getVideoInfo().get("cover")).into(cover);
@@ -76,6 +77,7 @@ public class HomeFragment extends Fragment {
             else {
                 --thisPageIndex;
                 getNewBvIdList();
+                if (BvIdList.isEmpty()) return;
                 thisBvIdIndex = BvIdList.size();
             }
         }
