@@ -38,7 +38,7 @@ public class RankAdapter extends ArrayAdapter<Rank> {
         TextView rankScore = view.findViewById(R.id.rank_score);
         Glide.with(getContext()).load(rank.getCoverUrl()).into(rankCover);
         rankTitle.setText(rank.getBangumiTitle());
-        rankScore.setText(rank.getScore());
+        rankScore.setText(rank.getPoints());
         return view;
     }
 }

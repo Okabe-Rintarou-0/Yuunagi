@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,9 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
@@ -29,6 +28,7 @@ import com.example.yuunagi.crawlers.BilibiliCrawler;
 import com.example.yuunagi.utils.ImageManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -156,6 +156,28 @@ public class HomeFragment extends Fragment {
         bvId = root.findViewById(R.id.BvId);
         presentKeyword = root.findViewById(R.id.keyword);
         presentKeyword.setText(getString(R.string.present_keyword) + ":" + "斋藤飞鸟");
+        Button favouriteButton = root.findViewById(R.id.favourite);
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    bilibiliCrawler.addToFavourite(BvIdList.get(thisBvIdIndex));
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Button cancelFavouriteButton = root.findViewById(R.id.cancelFavourite);
+        cancelFavouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    bilibiliCrawler.deleteFromFavourite(BvIdList.get(thisBvIdIndex));
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         Button searchButton = root.findViewById(R.id.coverSearchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,7 +186,7 @@ public class HomeFragment extends Fragment {
                 if (!thisKeyword.isEmpty()) {
                     try {
                         presentKeyword.setText(getString(R.string.present_keyword) + ":" + thisKeyword);
-                        getNewVideoInfoList();
+                        getNewBvIdList();
                         getNextCover();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -176,7 +198,6 @@ public class HomeFragment extends Fragment {
         });
         cover = root.findViewById(R.id.videoCover);
         cover.setOnLongClickListener(new View.OnLongClickListener() {
-
             @Override
             public boolean onLongClick(View view) {
                 final String[] items = new String[]{"保存图片"};
@@ -210,8 +231,6 @@ public class HomeFragment extends Fragment {
                 return true;
             }
         });
-
-
         return root;
     }
 }

@@ -25,10 +25,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lecho.lib.hellocharts.model.PointValue;
+
 public class BilibiliCrawler {
     private final String fansUrl = "https://space.bilibili.com/%S/fans/fans";
 
-    private final String rankUrl = "https://www.bilibili.com/v/popular/rank/all";
+    private final String rankUrl = "https://api.bilibili.com/pgc/web/rank/list?day=3&season_type=1";
 
     private final String searchUserUrl = "https://search.bilibili.com/upuser?keyword=%S&from_source=web_search";
 
@@ -57,6 +59,62 @@ public class BilibiliCrawler {
     private BilibiliCrawler() {
     }
 
+    public void addToFavourite(String bvId) throws IOException, InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String postUrl = "https://api.bilibili.com/x/v3/fav/resource/deal";
+                Connection connection = Jsoup.connect(postUrl);
+                connection
+                        .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/    20100101 Firefox/32.0")
+                        .data("rid", BVAVDecipher.getInstance().dec(bvId).toString())
+                        .data("type", "2")
+                        .data("add_media_ids", "53860237")
+                        .data("jsonp", "jsonp")
+                        .data("csrf", "e674d724904a5c1f453729af3bdaf750")
+                        .data("platform", "web")
+                        .header("cookie", "_uuid=B4812012-59F7-C0CA-2A2A-3D16F8C1464D61603infoc; buvid3=320B3CF2-3BBD-4601-984B-5D88A0B80B52184999infoc; sid=aacfu6oa; buvid_fp=320B3CF2-3BBD-4601-984B-5D88A0B80B52184999infoc; CURRENT_FNVAL=80; blackside_state=1; rpdid=|(mmRmYm)lm0J'uYul)Y))~); LIVE_BUVID=AUTO5516169314895366; bp_t_offset_5200237=518623270998973597; fingerprint3=e05487c2f8b960fc96e87d1bf7a57183; fingerprint_s=30d4dc5fc51c30ce1f1b7ff8de718a69; bsource=search_baidu; PVID=6; bfe_id=fdfaf33a01b88dd4692ca80f00c2de7f; bp_video_offset_5200237=525038831160283296; fingerprint=94dc83cf5cb33dba53c1b9db5489b730; buvid_fp_plain=93A2B277-AD7E-4547-9987-85362885202D58500infoc; DedeUserID=5200237; DedeUserID__ckMd5=0edb78f23ca63f84; SESSDATA=8d8d6ec6%2C1636635616%2Ca4574*51; bili_jct=e674d724904a5c1f453729af3bdaf750")
+                        .ignoreContentType(true);
+                try {
+                    Document document = connection.post();
+                    Log.d("result", document.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        thread.join();
+    }
+
+    public void deleteFromFavourite(String bvId) throws IOException, InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String postUrl = "https://api.bilibili.com/x/v3/fav/resource/deal";
+                Connection connection = Jsoup.connect(postUrl);
+                connection
+                        .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/    20100101 Firefox/32.0")
+                        .data("rid", BVAVDecipher.getInstance().dec(bvId).toString())
+                        .data("type", "2")
+                        .data("del_media_ids", "53860237")
+                        .data("jsonp", "jsonp")
+                        .data("csrf", "e674d724904a5c1f453729af3bdaf750")
+                        .data("platform", "web")
+                        .header("cookie", "_uuid=B4812012-59F7-C0CA-2A2A-3D16F8C1464D61603infoc; buvid3=320B3CF2-3BBD-4601-984B-5D88A0B80B52184999infoc; sid=aacfu6oa; buvid_fp=320B3CF2-3BBD-4601-984B-5D88A0B80B52184999infoc; CURRENT_FNVAL=80; blackside_state=1; rpdid=|(mmRmYm)lm0J'uYul)Y))~); LIVE_BUVID=AUTO5516169314895366; bp_t_offset_5200237=518623270998973597; fingerprint3=e05487c2f8b960fc96e87d1bf7a57183; fingerprint_s=30d4dc5fc51c30ce1f1b7ff8de718a69; bsource=search_baidu; PVID=6; bfe_id=fdfaf33a01b88dd4692ca80f00c2de7f; bp_video_offset_5200237=525038831160283296; fingerprint=94dc83cf5cb33dba53c1b9db5489b730; buvid_fp_plain=93A2B277-AD7E-4547-9987-85362885202D58500infoc; DedeUserID=5200237; DedeUserID__ckMd5=0edb78f23ca63f84; SESSDATA=8d8d6ec6%2C1636635616%2Ca4574*51; bili_jct=e674d724904a5c1f453729af3bdaf750")
+                        .ignoreContentType(true);
+                try {
+                    Document document = connection.post();
+                    Log.d("result", document.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        thread.join();
+    }
+
     public static BilibiliCrawler getInstance() {
         if (bilibiliCrawler == null)
             bilibiliCrawler = new BilibiliCrawler();
@@ -73,27 +131,20 @@ public class BilibiliCrawler {
                 Connection connection = Jsoup.connect(String.format(fansUrl, uid.toString()));
                 connection.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/    20100101 Firefox/32.0");
                 try {
-                    Document document = connection.get();
+                    Document document;
+                    document = connection.get();
                     String _iconUrl = document.select("link[rel=\"apple-touch-icon\"]").attr("href");
-//                    Log.d("iconUrl", _iconUrl);
+//                    Log.d("document", document.html());
                     iconUrl = _iconUrl;
-                    String[] personalInfo = document.select("meta[name=\"description\"]").attr("content").split("；");
-                    Pattern pattern = Pattern.compile("[0-9]+");
-//                    Log.d("personal", document.select("meta[name=\"description\"]").attr("content"));
-                    username = personalInfo[0].endsWith("，") ?
-                            personalInfo[0].substring(4, personalInfo[0].length() - 1) : personalInfo[0].substring(4);
-                    int fansIndex;
-                    for (fansIndex = 1; fansIndex < personalInfo.length; ++fansIndex) {
-                        if (!personalInfo[fansIndex].contains("粉丝数：")) {
-                            continue;
-                        }
-                        break;
-                    }
-//                    Log.d("username", username);
-                    Matcher matcher = pattern.matcher(personalInfo[fansIndex]);
+                    String[] personalInfo = document.select("meta[name=\"description\"]").attr("content").split("。");
+                    Pattern usernamePattern = Pattern.compile(".*，");
+                    Matcher matcher = usernamePattern.matcher(personalInfo[0]);
                     if (matcher.find()) {
-                        fansNumber = matcher.group(0);
-                    } else fansNumber = "0";
+                        username = matcher.group(0);
+                        username = username.substring(0, username.length() - 1);
+                    } else username = "null";
+                    Log.d("username", username);
+                    fansNumber = "0";
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -133,22 +184,29 @@ public class BilibiliCrawler {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                rankList = null;
+                rankList = new ArrayList<>();
                 Connection connection = Jsoup.connect(rankUrl);
-                connection.header("User-Agent", "User-Agent:Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;");
                 try {
-                    Document document = connection.get();
-                    List<Element> content = document.select("div[class=\"content\"] span");
-                    Log.d("content", document.html());
-                    for (int i = 0; i < 30; i += 3) {
-//                        Rank basicInfo = new Rank();
-//                        basicInfo.put("play", content.get(i).text());
-//                        basicInfo.put("commenting", content.get(i + 1).text());
-//                        basicInfo.put("author", content.get(i + 2).text());
-//                        rankList.add(basicInfo);
+                    connection
+                            .header("Accept", "*/*")
+                            .header("Accept-Encoding", "gzip, deflate")
+                            .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+                            .header("Content-Type", "application/json;charset=UTF-8")
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
+                            .timeout(10000).ignoreContentType(true);
+                    Connection.Response response = connection.execute();
+                    JSONObject json = JSONObject.fromObject(response.body());
+                    JSONObject result = JSONObject.fromObject(json.get("result"));
+                    JSONArray list = JSONArray.fromObject(result.get("list"));
+                    for (int i = 0; i < 5; ++i) {
+                        Object item = list.get(i);
+                        JSONObject bangumi = JSONObject.fromObject(item);
+                        String cover = bangumi.getString("cover");
+                        String points = bangumi.getString("pts");
+                        String title = bangumi.getString("title");
+                        rankList.add(new Rank(cover, title, points));
                     }
-                    content = document.select("div[class=\"content\"] a[class=\"title\"]");
-                    for (int i = 0; i < 10; ++i) ;
-//                        rankList.get(i).put("title", content.get(i).text());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -173,13 +231,7 @@ public class BilibiliCrawler {
                         .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
                         .timeout(10000).ignoreContentType(true);
                 try {
-                    connection.get();
-                    Connection.Response response = null;
-                    try {
-                        response = connection.execute();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Connection.Response response = connection.execute();
                     String body = response.body();
 //                Log.d("bvid", BvId);
                     JSONObject jsonObject = JSONObject.fromObject(body);
@@ -188,7 +240,7 @@ public class BilibiliCrawler {
                     Log.d("title", result.getString("title"));
                     String title = result.getString("title");
                     String tag = String.format("<em class=\"keyword\">%S</em>", keyword);
-                    String realTitle = title.replaceAll(tag,keyword);
+                    String realTitle = title.replaceAll(tag, keyword);
                     Log.d("cover", result.getString("pic"));
                     Log.d("bvId", result.getString("bvid"));
                     videoInfo = new HashMap<>();

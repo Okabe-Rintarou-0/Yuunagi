@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.home.HomeFragment">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
 
     <ImageView
         android:id="@+id/videoCover"
@@ -15,9 +14,9 @@
         android:src="@drawable/ic_launcher"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_launcher"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteY="89dp"
-        tools:srcCompat="@drawable/ic_launcher"
-        tools:ignore="MissingConstraints" />
+        tools:srcCompat="@drawable/ic_launcher" />
 
     <Button
         android:id="@+id/coverSearchButton"
@@ -84,4 +83,25 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/videoTitle" />
+
+    <Button
+        android:id="@+id/favourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="FAVOURITE"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/getPrevCoverButton" />
+
+    <Button
+        android:id="@+id/cancelFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="CANCEL_FAV"
+        app:layout_constraintStart_toEndOf="@+id/favourite"
+        app:layout_constraintTop_toBottomOf="@+id/getNextCoverButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

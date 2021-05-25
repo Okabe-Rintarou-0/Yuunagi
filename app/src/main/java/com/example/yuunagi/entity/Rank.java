@@ -3,12 +3,12 @@ package com.example.yuunagi.entity;
 public class Rank {
     private String coverUrl;
     private String bangumiTitle;
-    private String score;
+    private String points;
 
-   public Rank(String coverUrl, String bangumiTitle, String score) {
+   public Rank(String coverUrl, String bangumiTitle, String points) {
         this.coverUrl = coverUrl;
         this.bangumiTitle = bangumiTitle;
-        this.score = score;
+        this.points = points;
     }
 
     public String getCoverUrl() {
@@ -19,8 +19,8 @@ public class Rank {
         return bangumiTitle;
     }
 
-    public String getScore() {
-        return score;
+    public String getPoints() {
+        return points;
     }
 }
 

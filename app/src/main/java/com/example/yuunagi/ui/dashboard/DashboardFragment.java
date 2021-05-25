@@ -2,9 +2,15 @@ package com.example.yuunagi.ui.dashboard;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.AsyncQueryHandler;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +32,24 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.yuunagi.R;
 import com.example.yuunagi.crawlers.BilibiliCrawler;
+import com.example.yuunagi.crawlers.FansMonitor;
 import com.example.yuunagi.utils.ImageManager;
 
 import java.io.IOException;
-import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import im.dacer.androidcharts.LineView;
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.view.LineChartView;
 
 public class DashboardFragment extends Fragment {
 
@@ -41,7 +61,26 @@ public class DashboardFragment extends Fragment {
     private ImageView icon;
     private String userInput = "";
     private Integer thisUid = 5200237;
+    ArrayList<String> bottomLabel = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> dataLists = new ArrayList<>();
+    private Integer fansNumberWhenStartMonitor;
+    List<PointValue> fansNumberRecord = new ArrayList<>();
+    LineChartView mChartView;
 
+    private void addRecord(Float newFansNumber) {
+        int currentSize = fansNumberRecord.size();
+        if (currentSize > 0 && newFansNumber == fansNumberRecord.get(currentSize - 1).getY()) {
+            return;
+        }
+        if (currentSize == 8) {
+            for (int i = 0; i < 7; ++i)
+                fansNumberRecord.set(i, new PointValue(i, fansNumberRecord.get(i + 1).getY()));
+            fansNumberRecord.set(7, new PointValue(7, newFansNumber));
+        } else
+            fansNumberRecord.add(new PointValue(currentSize, newFansNumber));
+        Log.d("record", fansNumberRecord.toString());
+        drawChart();
+    }
 
     public DashboardFragment() {
         this.bilibiliCrawler = BilibiliCrawler.getInstance();
@@ -57,6 +96,7 @@ public class DashboardFragment extends Fragment {
         try {
             bilibiliCrawler.crawlUserInfo(thisUid);
             dashboardViewModel.setFansNumber(bilibiliCrawler.getFansNumber());
+            fansNumberWhenStartMonitor = Integer.parseInt(bilibiliCrawler.getFansNumber());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -84,6 +124,26 @@ public class DashboardFragment extends Fragment {
         do {
             getPrevUser();
         } while (bilibiliCrawler.getIconUrl().equals("http://i0.hdslb.com/bfs/face/member/noface.jpg") || bilibiliCrawler.getIconUrl().equals(""));
+    }
+
+    private void drawChart() {
+        Line line = new Line(fansNumberRecord).setColor(Color.parseColor("#FFCD41"));
+        line.setCubic(false);//设置是平滑的还是直的
+        line.setFilled(true);
+        line.setShape(ValueShape.CIRCLE);
+        line.setHasLabels(true);
+        line.setHasPoints(true);
+        List<Line> lines = new ArrayList<Line>();
+        lines.add(line);
+        mChartView.setInteractive(true);//设置图表是可以交互的（拖拽，缩放等效果的前提）
+        mChartView.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);//设置缩放方向
+        LineChartData data = new LineChartData();
+        Axis axisX = new Axis();//x轴
+        Axis axisY = new Axis();//y轴
+        data.setAxisXBottom(axisX);
+        data.setAxisYLeft(axisY);
+        data.setLines(lines);
+        mChartView.setLineChartData(data);//给图表设置数据
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -216,8 +276,30 @@ public class DashboardFragment extends Fragment {
                 Glide.with(getContext()).load(bilibiliCrawler.getIconUrl()).into(icon);
             }
         });
+        mChartView = root.findViewById(R.id.chart);
+        Button monitor;
+        monitor = root.findViewById(R.id.monitor);
+        monitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mChartView.getVisibility() == View.INVISIBLE) {
+                    mChartView.setVisibility(View.VISIBLE);
+                    icon.setVisibility(View.INVISIBLE);
+                    fansNumberWhenStartMonitor = Integer.parseInt(bilibiliCrawler.getFansNumber());
+                    Timer timer = new Timer();
+                    TimerTask timerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            addRecord(Float.parseFloat(FansMonitor.getInstance().crawFansNumber(thisUid)));
+                        }
+                    };
+                    timer.schedule(timerTask, 0, 5000);
+                } else {
+                    mChartView.setVisibility(View.INVISIBLE);
+                    icon.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         return root;
     }
-
-
 }
