@@ -61,13 +61,12 @@ public class DashboardFragment extends Fragment {
     private ImageView icon;
     private String userInput = "";
     private Integer thisUid = 5200237;
-    ArrayList<String> bottomLabel = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> dataLists = new ArrayList<>();
-    private Integer fansNumberWhenStartMonitor;
     List<PointValue> fansNumberRecord = new ArrayList<>();
     LineChartView mChartView;
 
-    private void addRecord(Float newFansNumber) {
+    @SuppressLint("SetTextI18n")
+    private void addRecord(String newRecord) {
+        Float newFansNumber = Float.parseFloat(newRecord);
         int currentSize = fansNumberRecord.size();
         if (currentSize > 0 && newFansNumber == fansNumberRecord.get(currentSize - 1).getY()) {
             return;
@@ -78,8 +77,8 @@ public class DashboardFragment extends Fragment {
             fansNumberRecord.set(7, new PointValue(7, newFansNumber));
         } else
             fansNumberRecord.add(new PointValue(currentSize, newFansNumber));
-        Log.d("record", fansNumberRecord.toString());
         drawChart();
+        fansNumberText.setText(getString(R.string.bilibili_fans) + ":" + newRecord);
     }
 
     public DashboardFragment() {
@@ -96,7 +95,6 @@ public class DashboardFragment extends Fragment {
         try {
             bilibiliCrawler.crawlUserInfo(thisUid);
             dashboardViewModel.setFansNumber(bilibiliCrawler.getFansNumber());
-            fansNumberWhenStartMonitor = Integer.parseInt(bilibiliCrawler.getFansNumber());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -217,7 +215,6 @@ public class DashboardFragment extends Fragment {
         });
         icon = root.findViewById(R.id.icon);
         icon.setOnLongClickListener(new View.OnLongClickListener() {
-
             @Override
             public boolean onLongClick(View view) {
                 final String[] items = new String[]{"保存图片"};
@@ -285,12 +282,11 @@ public class DashboardFragment extends Fragment {
                 if (mChartView.getVisibility() == View.INVISIBLE) {
                     mChartView.setVisibility(View.VISIBLE);
                     icon.setVisibility(View.INVISIBLE);
-                    fansNumberWhenStartMonitor = Integer.parseInt(bilibiliCrawler.getFansNumber());
                     Timer timer = new Timer();
                     TimerTask timerTask = new TimerTask() {
                         @Override
                         public void run() {
-                            addRecord(Float.parseFloat(FansMonitor.getInstance().crawFansNumber(thisUid)));
+                            addRecord(FansMonitor.getInstance().crawFansNumber(thisUid));
                         }
                     };
                     timer.schedule(timerTask, 0, 5000);

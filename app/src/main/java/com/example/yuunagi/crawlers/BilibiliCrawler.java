@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lecho.lib.hellocharts.model.PointValue;
 
 public class BilibiliCrawler {
-    private final String fansUrl = "https://space.bilibili.com/%S/fans/fans";
+    private final String personInfoUrl = "https://space.bilibili.com/%S/fans/fans";
+
+    private final String fansApiUrl = "https://api.bilibili.com/x/relation/stat?vmid=%d&jsonp=jsonp";
 
     private final String rankUrl = "https://api.bilibili.com/pgc/web/rank/list?day=3&season_type=1";
 
@@ -125,26 +128,45 @@ public class BilibiliCrawler {
         List<Thread> threads = new ArrayList<>();
         rankList = null;
         rankList = new ArrayList<>();
-        threads.add(new Thread(new Runnable() {
+        threads.add(new Thread(new Runnable() {// craw username and icon;
             @Override
             public void run() {
-                Connection connection = Jsoup.connect(String.format(fansUrl, uid.toString()));
+                Connection connection = Jsoup.connect(String.format(personInfoUrl, uid.toString()));
                 connection.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/    20100101 Firefox/32.0");
                 try {
                     Document document;
                     document = connection.get();
                     String _iconUrl = document.select("link[rel=\"apple-touch-icon\"]").attr("href");
-//                    Log.d("document", document.html());
                     iconUrl = _iconUrl;
-                    String[] personalInfo = document.select("meta[name=\"description\"]").attr("content").split("。");
-                    Pattern usernamePattern = Pattern.compile(".*，");
-                    Matcher matcher = usernamePattern.matcher(personalInfo[0]);
-                    if (matcher.find()) {
-                        username = matcher.group(0);
-                        username = username.substring(0, username.length() - 1);
-                    } else username = "null";
+                    String personalInfo = document.select("meta[name=\"description\"]").attr("content");
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < personalInfo.length() && personalInfo.charAt(i) != '，'; ++i) {
+                        stringBuilder.append(personalInfo.charAt(i));
+                    }
+                    username = stringBuilder.toString();
                     Log.d("username", username);
-                    fansNumber = "0";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
+        threads.add(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Connection connection = Jsoup.connect(String.format(fansApiUrl, uid));
+                try {
+                    connection
+                            .header("Accept", "*/*")
+                            .header("Accept-Encoding", "gzip, deflate")
+                            .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+                            .header("Content-Type", "application/json;charset=UTF-8")
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
+                            .timeout(10000).ignoreContentType(true);
+                    Connection.Response response = connection.execute();
+                    JSONObject json = JSONObject.fromObject(response.body());
+                    JSONObject data = JSONObject.fromObject(json.get("data"));
+                    fansNumber = data.getString("follower");
+                    Log.d("fans", fansNumber);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -154,7 +176,6 @@ public class BilibiliCrawler {
             thread.start();
             thread.join();
         }
-//        Log.d("fansNumber", fansNumber.toString());
     }
 
     public void crawlUidByUsername(final String username) throws InterruptedException {
