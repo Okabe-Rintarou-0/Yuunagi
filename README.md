@@ -1,6 +1,6 @@
 # Yuunagi
 ### Description
-Yunnagi is an andriod app that I create for fun and practising native andriod. The app is based on Java and jsoup(A good crawler lab for andriod), and it focuses on crawling the info of users and videos(including the cover or icon, the number of fans, etc). Users are free to save the icon of user or the cover of videos. Users are also free to browse any user by uid or his/her name. Users can also monitor the change of number of fans of a certain user. More interestingly, users can browse from the first user of bilibili(namely from uid = 1). Don't tell that you don't know him XD (yes, he's bishi)
+Yunnagi is an andriod app that I create for fun and practising native andriod. The app is based on Java and jsoup(A good crawler lib for andriod), and it focuses on crawling the info of users and videos(including the cover or icon, the number of fans, etc). Users are free to save the icon of user or the cover of videos. Users are also free to browse any user by uid or his/her name. Users can also monitor the change of number of fans of a certain user. More interestingly, users can browse from the first user of bilibili(namely from uid = 1). Don't tell that you don't know him XD (yes, he's bishi)
 ### How to use
 + Search user
 
