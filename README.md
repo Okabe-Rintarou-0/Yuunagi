@@ -29,12 +29,20 @@ Just click the MONITOR button, then you can see the change of fans number. Let's
 
 <img style="width:300px;height:600px" src="https://raw.githubusercontent.com/Okabe-Rintarou-0/web-images/master/books/8db6f753b4aaf6b888c8735f988834a.4eu0myc7olk0.jpg" align=center />
 
-+ Save Icon
++ Save icons
 
 You are free to save the icon of any user by just long tapping the img and cliking the save button.
 
 <img style="width:300px;height:600px" src="https://raw.githubusercontent.com/Okabe-Rintarou-0/web-images/master/books/9107e96a3b45f067b69da8989f88e96.1rc1qwpnshhc.jpg" align=center />
 
-+ Browse Videos
++ Browse videos
 
 Videos are similar to users. Just be free to browse them and download the cover. Enjoy yourself and have fun.
+
+<img style="width:300px;height:600px" src="https://raw.githubusercontent.com/Okabe-Rintarou-0/web-images/master/books/2427832af2419ed5e0050ff2e69f940.5sct1u21xok0.jpg" align=center />
+
++ Bangumi rank
+
+Simple rank of bangumis.
+
+<img style="width:300px;height:600px" src="https://raw.githubusercontent.com/Okabe-Rintarou-0/web-images/master/books/9ea6fc1887e0ffdedbd07c26f70c28a.3nx8akbv4ig0.jpg" align=center />
